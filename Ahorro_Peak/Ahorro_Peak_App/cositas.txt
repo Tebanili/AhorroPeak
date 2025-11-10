@@ -1,0 +1,3 @@
+cambiar el nombre de Gastos totales a -> Gastos del mes... lo mismo coon ingresos totales -> ingresos del mes
+hacer los gastos del mes se reinicien a 0 al inicio de cada mes y queden almacenados, lo mismo con ingresos del mes
+

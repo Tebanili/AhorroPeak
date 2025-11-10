@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Registro / Login | AhorroPeak{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card p-4 shadow">
+            <h3 class="text-center mb-4">Bienvenido a AhorroPeak</h3>
+
+            <!-- Mostrar mensajes de error -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- FORMULARIO DE REGISTRO -->
+            <form method="POST" action="{% url 'registro' %}">
+                {% csrf_token %}
+                <h5>Registrarse</h5>
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 mb-3">Crear cuenta</button>
+            </form>
+
+            <hr>
+
+            <!-- FORMULARIO DE LOGIN -->
+            <form method="POST" action="{% url 'login_usuario' %}">
+                {% csrf_token %}
+                <h5>Iniciar sesión</h5>
+                <div class="mb-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Ingresar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

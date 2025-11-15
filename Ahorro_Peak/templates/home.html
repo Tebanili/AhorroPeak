@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<!-- Botón para abrir el menú lateral -->
+<!-- Boton para abrir el menu lateral -->
 <div class="d-flex justify-content-end mb-3">
   <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#userSidebar" aria-controls="userSidebar">
     <i class="bi bi-person-circle me-1"></i> Menú
@@ -18,7 +18,7 @@
   </div>
 
   <div class="offcanvas-body d-flex flex-column justify-content-between">
-    <!-- Sección superior: Usuario -->
+    <!-- Seccion superior: Usuario -->
     <div class="text-center mt-3">
       <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar" class="rounded-circle mb-2" width="80" height="80">
       <div class="btn btn-primary w-100 mt-2">
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <!-- Sección inferior: Logout -->
+    <!-- Seccion inferior: Logout -->
     <div class="mt-auto">
       <hr>
       <a href="{% url 'registro' %}" class="btn btn-outline-danger w-100">
@@ -53,8 +53,8 @@
 
           <div class="d-flex gap-2 mt-2">
               <!-- Botones que abren los modales -->
-              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalIngreso">Ingresar sueldo</button>
-              <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalGasto">Ingresar gasto</button>
+              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalIngreso">Nuevo Ingreso</button>
+              <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalGasto">Nuevo Gasto</button>
           </div>
       </div>
 

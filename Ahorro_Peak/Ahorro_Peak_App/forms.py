@@ -18,17 +18,6 @@ class IngresoForm(forms.ModelForm):
         fields = ['tipo_ingreso', 'descripcion', 'monto', 'fecha_ingreso']
 
 #Lo que hace las funciones clean es obligar a agregar una descripcion si el usuario elijio 'PERSONALIAZDO' para identificar el pago o la compra.
-    def clean(self): 
-        data_limpia = super().clean()
-        tipo = data_limpia.get('tipo_ingreso')
-        descripcion = data_limpia.get('descripcion')
-
-        if tipo == 'personalizado' and not descripcion:
-            self.add_error('descripcion', 'Debe ingresar una descripcion')
-        elif tipo != 'personalizado':
-            data_limpia['descripcion'] = None
-
-        return data_limpia
 
     widgets = {
         'fecha_ingreso' : forms.DateTimeInput(attrs={
@@ -52,17 +41,6 @@ class GastosForm(forms.ModelForm):
             }),
         }
 
-    def clean(self):  
-        data_limpia = super().clean()
-        tipo = data_limpia.get('tipo_gasto')
-        descripcion = data_limpia.get('descripcion')
-
-        if tipo == 'personalizado' and not descripcion:
-            self.add_error('descripcion', 'Debe ingresar una descripcion')
-        elif tipo != 'personalizado':
-            data_limpia['descripcion'] = None
-
-        return data_limpia
 
     def clean_fecha_gasto(self):
         fecha = self.cleaned_data.get('fecha_gasto')

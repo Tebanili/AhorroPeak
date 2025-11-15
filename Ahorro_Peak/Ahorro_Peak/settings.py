@@ -14,8 +14,13 @@ from pathlib import Path
 import os
 import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# 1) Definir BASE_DIR primero
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 2) Recién después cargar el .env
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=BASE_DIR / ".env")
+print("DEBUG ENV:", os.environ.get("DATABASE_URL"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -89,7 +94,7 @@ else:
     DATABASES = {
         'default': default_sqlite
     }
-#postgresql://neondb_owner:npg_tJypEr89haeA@ep-little-voice-ac3c3snf-pooler.sa-east-1.aws.neon.tech/AhorroPeakBD?sslmode=require&channel_binding=require
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

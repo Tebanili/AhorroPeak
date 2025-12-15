@@ -109,7 +109,7 @@ class Notificacion(models.Model):
         for meta in metas:
             dias_restantes = (meta.fecha_limite - timezone.now()).days
             if dias_restantes <= 3 and meta.progreso_actual < meta.monto_objetivo:
-                contenido = f"Tu meta '{meta.nombre_meta}' termina en {dias_restantes} días. ¡Ahorra más para alcanzar tu objetivo!"
+                contenido = f"Tu meta '{meta.nombre_meta}' termina en {dias_restantes} dias. ¡Ahorra mas para alcanzar tu objetivo!"
                 Notificacion.objects.create(
                     usuario=self.usuario,
                     frecuencia='entrar',

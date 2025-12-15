@@ -48,14 +48,20 @@ class GastosForm(forms.ModelForm):
 
 
 class MetaAhorroForm(forms.ModelForm):
+    frecuencia_notificacion = forms.ChoiceField(
+        choices=Notificacion.FRECUENCIA, 
+        label="Frecuencia de recordatorio",
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
     class Meta:
         model = MetaAhorro
-        fields = ['usuario', 'nombre_meta', 'monto_objetivo', 'fecha_limite', 'progreso_actual']
+        fields = ['nombre_meta', 'monto_objetivo', 'fecha_limite']
         widgets = {
-            'fecha_limite' : forms.DateTimeInput(attrs={
-                'type' : 'datetime-local',
-                'class' : 'form-control'
-            })
+            'nombre_meta': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Viaje a Brasil'}),
+            'monto_objetivo': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0'}),
+            'fecha_limite': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
     def clean_fecha_limite(self): #el usuario no podra poner fechas anteriores a la actual

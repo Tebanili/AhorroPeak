@@ -4,21 +4,18 @@
 
 {% block content %}
 
-<!-- Boton para abrir el menu lateral -->
 <div class="d-flex justify-content-end mb-3">
   <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#userSidebar" aria-controls="userSidebar">
     <i class="bi bi-person-circle me-1"></i> Menú
   </button>
 </div>
 
-<!-- Pestaña lateral -->
 <div class="offcanvas offcanvas-end text-bg-light" tabindex="-1" id="userSidebar" aria-labelledby="userSidebarLabel">
   <div class="offcanvas-header border-bottom">
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
   </div>
 
   <div class="offcanvas-body d-flex flex-column justify-content-between">
-    <!-- Seccion superior: Usuario -->
     <div class="text-center mt-3">
       <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar" class="rounded-circle mb-2" width="80" height="80">
       <div class="btn btn-primary w-100 mt-2">
@@ -26,7 +23,6 @@
       </div>
     </div>
 
-    <!-- Seccion inferior: Logout -->
     <div class="mt-auto">
       <hr>
       <a href="{% url 'registro' %}" class="btn btn-outline-danger w-100">
@@ -37,28 +33,27 @@
 </div>
 
 <div class="row">
-  <!-- Columna izquierda -->
   <div class="col-md-8">
       <div class="card bg-warning mb-3 p-3">
           <h2 class="fw-bold">Bienvenido a AhorroPeak</h2>
           <p class="mb-0">Gestiona tus ingresos y gastos de forma eficiente</p>
       </div>
 
-      <!-- Resumen -->
       <div class="card bg-success-subtle mb-3 p-3">
           <h4>Resumen</h4>
           <p><strong>Saldo disponible:</strong> ${{ saldo_disponible }}</p>
           <p><strong>Ingresos totales:</strong> ${{ total_ingresos }}</p>
           <p><strong>Gastos totales:</strong> ${{ total_gastos }}</p>
+          <p class="text-primary border-top border-success pt-2">
+              <strong>Cantidad abonada:</strong> ${{ total_ahorrado }}
+          </p>
 
           <div class="d-flex gap-2 mt-2">
-              <!-- Botones que abren los modales -->
               <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalIngreso">Nuevo Ingreso</button>
               <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalGasto">Nuevo Gasto</button>
           </div>
       </div>
 
-      <!-- Historial -->
       <div class="card mb-3">
           <div class="card-header bg-secondary text-white">Historial</div>
           <div class="card-body">
@@ -73,7 +68,6 @@
                   </div>
               </div>
               {% empty %}
-              <p>No hay gastos registrados.</p>
               {% endfor %}
 
               {% for i in ingresos %}
@@ -87,22 +81,109 @@
                   </div>
               </div>
               {% empty %}
-              <p>No hay ingresos registrados.</p>
               {% endfor %}
+              
+              {% if not gastos and not ingresos %}
+              <p>No hay movimientos registrados.</p>
+              {% endif %}
           </div>
       </div>
   </div>
 
-  <!-- Columna derecha -->
   <div class="col-md-4">
       <div class="card bg-warning-subtle p-3 mb-3">
           <h5 class="text-center">Gráfica de Gastos Mensuales</h5>
           <canvas id="gastosChart"></canvas>
       </div>
+
+      <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 text-center">Mis Metas de Ahorro</h5>
+          </div>
+          
+          <div class="card-body">
+              <div class="d-grid gap-2 mb-3">
+                <button class="btn btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalMeta">
+                    <i class="bi bi-plus-circle"></i> Crear Nueva Meta
+                </button>
+              </div>
+              <hr>
+
+              <div style="max-height: 400px; overflow-y: auto;">
+                  {% for meta in metas %}
+                  <div class="mb-3 border rounded p-3 bg-light">
+                      
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div>
+                              <strong class="text-primary d-block">{{ meta.nombre_meta }}</strong>
+                              <span class="badge bg-secondary" style="font-size: 0.65rem;">Vence: {{ meta.fecha_limite|date:"d/m/y" }}</span>
+                          </div>
+                          <button class="btn btn-outline-danger btn-sm border-0" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ meta.id }}" title="Eliminar meta">
+                              <i class="bi bi-trash3-fill"></i>
+                          </button>
+                      </div>
+                      
+                      <div class="progress mb-2" style="height: 25px;">
+                          <div class="progress-bar {% if meta.progreso_porcentaje >= 100 %}bg-success{% else %}bg-info{% endif %} progress-bar-striped progress-bar-animated" 
+                               role="progressbar" 
+                               style="width: {{ meta.progreso_porcentaje }}%;" 
+                               aria-valuenow="{{ meta.progreso_porcentaje }}" 
+                               aria-valuemin="0" 
+                               aria-valuemax="100">
+                               {{ meta.progreso_porcentaje }}%
+                          </div>
+                      </div>
+                      
+                      <div class="d-flex justify-content-between small text-muted mb-2">
+                          <span>Abonado: <strong>{{ meta.mostrar_progreso_actual }}</strong></span>
+                          <span>Meta: <strong>{{ meta.mostrar_progreso_objetivo }}</strong></span>
+                      </div>
+
+                      <form method="POST" action="{% url 'home' %}" class="d-flex gap-2 mt-3 border-top pt-2">
+                          {% csrf_token %}
+                          <input type="hidden" name="meta_id" value="{{ meta.id }}">
+                          <input type="number" name="monto_ahorro" class="form-control form-control-sm" placeholder="Monto a abonar" required min="1">
+                          <button type="submit" name="abonar_meta" class="btn btn-sm btn-success" title="Abonar">
+                              Abonar
+                          </button>
+                      </form>
+                  </div>
+
+                  <div class="modal fade" id="modalEliminar{{ meta.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                          <h5 class="modal-title">Eliminar Meta</h5>
+                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                          <i class="bi bi-exclamation-triangle-fill text-warning mb-3" style="font-size: 2rem;"></i>
+                          <p>¿Estas seguro de que quieres eliminar la meta <strong>{{ meta.nombre_meta }}</strong>?</p>
+                          <p class="small text-muted">Perderas el registro de los {{ meta.mostrar_progreso_actual }} ahorrados.</p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                          <form method="post" action="{% url 'home' %}">
+                             {% csrf_token %}
+                             <input type="hidden" name="eliminar_meta" value="true">
+                             <input type="hidden" name="meta_id" value="{{ meta.id }}">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                             <button type="submit" class="btn btn-danger">Eliminar</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% empty %}
+                  <div class="text-center py-4 text-muted">
+                    <p>No tienes metas activas.</p>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+      </div>
   </div>
 </div>
 
-<!-- Modal INGRESO -->
 <div class="modal fade" id="modalIngreso" tabindex="-1" aria-labelledby="modalIngresoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -124,7 +205,6 @@
   </div>
 </div>
 
-<!-- Modal GASTO -->
 <div class="modal fade" id="modalGasto" tabindex="-1" aria-labelledby="modalGastoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -132,7 +212,6 @@
         <h5 class="modal-title" id="modalGastoLabel">Nuevo Gasto</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-
       <div class="modal-body">
         <form method="post" action="{% url 'home' %}">
           {% csrf_token %}
@@ -147,7 +226,45 @@
   </div>
 </div>
 
-<!-- GRAFICA DE PASTEL -->
+<div class="modal fade" id="modalMeta" tabindex="-1" aria-labelledby="modalMetaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalMetaLabel">Nueva Meta de Ahorro</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'home' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+              <label class="form-label fw-bold">Nombre de la Meta</label>
+              {{ meta_form.nombre_meta }}
+          </div>
+          <div class="mb-3">
+              <label class="form-label fw-bold">Monto Objetivo ($)</label>
+              {{ meta_form.monto_objetivo }}
+          </div>
+          <div class="mb-3">
+              <label class="form-label fw-bold">Fecha Límite</label>
+              {{ meta_form.fecha_limite }}
+          </div>
+          <hr>
+          <div class="alert alert-info py-2">
+            <i class="bi bi-bell-fill"></i> <strong>Configuración de Alertas</strong>
+            <p class="small mb-2">Se te notificará el tiempo restante.</p>
+            <label class="form-label fw-bold">Frecuencia:</label>
+            {{ meta_form.frecuencia_notificacion }}
+          </div>
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary">Crear Meta</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
